@@ -9,24 +9,33 @@ interface PasswordScreenProps {
   onSuccess: () => void;
 }
 
-const LOVE_LETTER = `Kepada kamu yang aku sayang AZ,
+const LOVE_LETTER = `Kepada Jijoy sayangku,
 
-Terima kasih sudah hadir dalam hidupku.
-Kamu adalah anugerah terindah yang pernah aku terima.
+Hari ini kau memulai UAS pertama.
+Walau terasa berat, tapi ingat:
+🌟 Kamu sudah pernah menghadapi Tantangan besar dalam hidup
+🌟 Kau adalah yang paling kuat yang aku kenal
+🌟 ISTIRAHAT Secukupnya, tapi TIDAK BERHENTI
+🌟 HM selalui mendukungmu dari sini
 
-Setiap momen bersamamu itu spéciale.
-Tawa kamu, senyum kamu, semuanya.
+Kau bisa!
+Tidak ada yang lebih Bangga dari aku melihatmu berjuang.
+USU akan kita rayakan bersama setelah semua selesai.
 
-Kamu bukan hanya pacar tapi juga semangat hidupku.
-Di saat aku down, kamu selalu ada buat aku semangat lagi.
-
-Makasih sudah mau stay sama aku.
-Makasih sudah pilih aku.
-
-Aku sayang kamu AZ 💕
-Selamanya.
+Semangat sayangku! 💕
+Aku pride jadi punya kamu.
 
 - HM`;
+
+const ENCOURAGEMENT = [
+  "Kau pasti bisa! 💪",
+  "HM percaya sama Jijoy! 🌟",
+  "Satu langkah lagi, kau pasti bisa! ✨",
+  "Jangan lupa istirahat ya! 💕",
+  "Semua akan berakhir dengan kebanggaan! 🎉",
+  "Kau sudah sejauh ini, lanjutkan! 🚀",
+  "HM selalui bangga sama kamu! ❤️",
+];
 
 export default function PasswordScreen({ onSuccess }: PasswordScreenProps) {
   const [answer, setAnswer] = useState('');
