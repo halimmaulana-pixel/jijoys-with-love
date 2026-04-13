@@ -13,7 +13,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Untuk AZ 💕",
+  title: "Untuk Jijoy 💕",
   description: "A special love website made with love",
 };
 

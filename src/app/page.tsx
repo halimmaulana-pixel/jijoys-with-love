@@ -7,13 +7,13 @@ import PasswordScreen from '@/components/PasswordScreen';
 import PhotoMosaic from '@/components/PhotoMosaic';
 
 const FACTS = [
-  { emoji: '🎂', text: 'Ultah AZ: 14 Des 2004', sub: '(21 tahun ♐️)' },
+  { emoji: '🎂', text: 'Ultah Jijoy: 14 Des 2004', sub: '(21 tahun ♐️)' },
   { emoji: '🧇', text: 'Suka makan wafel + ayam 🍗', sub: '' },
   { emoji: '📍', text: 'Pertama ketemu: Parkiran Rektorat USU', sub: '' },
   { emoji: '💕', text: 'Date pertama: 26 Juni', sub: 'parkiran USU → Kopi Kuni' },
-  { emoji: '😊', text: 'Panggilan: AZ', sub: '🐰' },
+  { emoji: '😊', text: 'Panggilan: Jijoy', sub: '🐰' },
   { emoji: '♐️', text: 'Sagitarius', sub: 'fun & adventurous' },
-  { emoji: '💕', text: 'HM loves AZ', sub: 'since 2025' },
+  { emoji: '💕', text: 'HM loves Jijoy', sub: 'since 2025' },
 ];
 
 const START_DATE = new Date('2025-06-26');
@@ -151,7 +151,7 @@ export default function Home() {
                 className="text-center"
               >
                 <h1 className="text-3xl md:text-5xl font-bold text-white mb-2">
-                  HM & AZ 💕
+                  HM & Jijoy 💕
                 </h1>
                 <p className="text-white/60 text-lg">Since 26 Juni 2025</p>
               </motion.div>
@@ -203,7 +203,7 @@ export default function Home() {
               </motion.div>
 
               <footer className="text-center py-8 text-white/40">
-                <p>Made with �� for AZ</p>
+                <p>Made with �� for Jijoy</p>
                 <p className="text-sm">8 Maret 2025 - Sekarang</p>
               </footer>
             </div>
