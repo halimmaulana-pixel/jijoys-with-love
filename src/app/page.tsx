@@ -66,31 +66,43 @@ function RelationshipCounter() {
 }
 
 function FloatingHearts() {
+  const hearts = [...Array(20)].map((_, i) => {
+    const startX = Math.random() * 100;
+    const scale = Math.random() * 0.5 + 0.5;
+    const opacity = Math.random() * 0.5 + 0.3;
+    const endX = Math.random() * 100;
+    const rotate = Math.random() * 360;
+    const duration = Math.random() * 10 + 10;
+    const left = Math.random() * 100;
+    const emoji = ['💕', '💗', '💖', '🧡', '❤️'][Math.floor(Math.random() * 5)];
+    return { i, startX, scale, opacity, endX, rotate, duration, left, emoji };
+  });
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-      {[...Array(20)].map((_, i) => (
+      {hearts.map((h) => (
         <motion.div
-          key={i}
+          key={h.i}
           initial={{ 
-            x: Math.random() * 100 + 'vw', 
+            x: h.startX + 'vw', 
             y: '100vh',
-            scale: Math.random() * 0.5 + 0.5,
-            opacity: Math.random() * 0.5 + 0.3,
+            scale: h.scale,
+            opacity: h.opacity,
           }}
           animate={{
             y: -100,
-            x: Math.random() * 100 + 'vw',
-            rotate: Math.random() * 360,
+            x: h.endX + 'vw',
+            rotate: h.rotate,
           }}
           transition={{
-            duration: Math.random() * 10 + 10,
+            duration: h.duration,
             repeat: Infinity,
             ease: 'linear',
           }}
           className="absolute text-2xl"
-          style={{ left: Math.random() * 100 + '%' }}
+          style={{ left: h.left + '%' }}
         >
-          {['💕', '💗', '💖', '🧡', '❤️'][Math.floor(Math.random() * 5)]}
+          {h.emoji}
         </motion.div>
       ))}
     </div>
