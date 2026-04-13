@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import ModeMalam from '@/components/ModeMalam';
 import PasswordScreen from '@/components/PasswordScreen';
@@ -66,31 +66,32 @@ function RelationshipCounter() {
 }
 
 function FloatingHearts() {
+  const hearts = useMemo(() =>
+    Array.from({ length: 20 }).map(() => ({
+      x: Math.random() * 100 + 'vw',
+      y: '100vh',
+      scale: Math.random() * 0.5 + 0.5,
+      opacity: Math.random() * 0.5 + 0.3,
+      animateX: Math.random() * 100 + 'vw',
+      rotate: Math.random() * 360,
+      duration: Math.random() * 10 + 10,
+      left: Math.random() * 100 + '%',
+      emojiIndex: Math.floor(Math.random() * 5),
+    })),
+  []);
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-      {[...Array(20)].map((_, i) => (
+      {hearts.map((h, i) => (
         <motion.div
           key={i}
-          initial={{ 
-            x: Math.random() * 100 + 'vw', 
-            y: '100vh',
-            scale: Math.random() * 0.5 + 0.5,
-            opacity: Math.random() * 0.5 + 0.3,
-          }}
-          animate={{
-            y: -100,
-            x: Math.random() * 100 + 'vw',
-            rotate: Math.random() * 360,
-          }}
-          transition={{
-            duration: Math.random() * 10 + 10,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
+          initial={{ x: h.x, y: h.y, scale: h.scale, opacity: h.opacity }}
+          animate={{ y: -100, x: h.animateX, rotate: h.rotate }}
+          transition={{ duration: h.duration, repeat: Infinity, ease: 'linear' }}
           className="absolute text-2xl"
-          style={{ left: Math.random() * 100 + '%' }}
+          style={{ left: h.left }}
         >
-          {['💕', '💗', '💖', '🧡', '❤️'][Math.floor(Math.random() * 5)]}
+          {['💕', '💗', '💖', '🧡', '❤️'][h.emojiIndex]}
         </motion.div>
       ))}
     </div>

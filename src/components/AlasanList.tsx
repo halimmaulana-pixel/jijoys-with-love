@@ -112,10 +112,9 @@ export default function AlasanList() {
       isRevealed: false,
     }))
   );
-  const [mounted, setMounted] = useState(false);
+
 
   useEffect(() => {
-    setMounted(true);
     const revealed = loadRevealedStates();
     setItems((prev) =>
       prev.map((item) => ({
