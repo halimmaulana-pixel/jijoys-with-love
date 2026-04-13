@@ -213,7 +213,6 @@ export default function ChasingLetters() {
     updateParticles();
     draw();
 
-    animationRef.current = requestAnimationFrame(animate);
   }, [updateLetters, updateParticles, draw]);
 
   useEffect(() => {
