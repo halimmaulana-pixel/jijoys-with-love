@@ -15,7 +15,10 @@
 
 # next.js
 /.next/
+# static export (not needed for Vercel)
 /out/
+# docs (duplicate)
+/docs/
 
 # production
 /build
