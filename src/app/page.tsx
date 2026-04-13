@@ -6,6 +6,10 @@ import ModeMalam from '@/components/ModeMalam';
 import PasswordScreen from '@/components/PasswordScreen';
 import PhotoMosaic from '@/components/PhotoMosaic';
 import ParticleBackground from '@/components/ParticleBackground';
+import MoodSelector from '@/components/MoodSelector';
+import ChasingLetters from '@/components/ChasingLetters';
+import LoveMeter from '@/components/LoveMeter';
+import WishLetter from '@/components/WishLetter';
 
 const FACTS = [
   { emoji: '🎂', text: 'Ultah Jijoy: 14 Des 2004', sub: '(21 tahun ♐️)' },
@@ -165,6 +169,38 @@ export default function Home() {
                 className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20"
               >
                 <RelationshipCounter />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+              >
+                <MoodSelector />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <ChasingLetters />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 }}
+              >
+                <LoveMeter />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <WishLetter />
               </motion.div>
 
               <motion.div
