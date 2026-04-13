@@ -66,8 +66,10 @@ function RelationshipCounter() {
 }
 
 function FloatingHearts() {
-  const hearts = useMemo(() =>
-    Array.from({ length: 20 }).map(() => ({
+  const [hearts, setHearts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const generated = Array.from({ length: 20 }).map(() => ({
       x: Math.random() * 100 + 'vw',
       y: '100vh',
       scale: Math.random() * 0.5 + 0.5,
@@ -77,8 +79,9 @@ function FloatingHearts() {
       duration: Math.random() * 10 + 10,
       left: Math.random() * 100 + '%',
       emojiIndex: Math.floor(Math.random() * 5),
-    })),
-  []);
+    }));
+    setHearts(generated);
+  }, []);
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
