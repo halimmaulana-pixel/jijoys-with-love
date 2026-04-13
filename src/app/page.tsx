@@ -98,16 +98,8 @@ function FloatingHearts() {
 }
 
 export default function Home() {
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const unlocked = localStorage.getItem('love-website-unlocked');
-    if (unlocked === 'true') {
-      setIsUnlocked(true);
-    }
-    setIsLoading(false);
-  }, []);
+  const [isUnlocked, setIsUnlocked] = useState(true); // DEBUG: bypass password
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleUnlock = () => {
     setIsUnlocked(true);

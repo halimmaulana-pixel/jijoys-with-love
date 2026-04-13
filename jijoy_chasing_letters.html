@@ -1,0 +1,272 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff0f8;font-family:'Nunito',sans-serif;overflow:hidden;height:600px;position:relative}
+canvas{position:absolute;top:0;left:0;pointer-events:none;z-index:0}
+#stage{width:100%;height:600px;position:relative;overflow:hidden;cursor:none}
+.letter{
+  position:absolute;
+  font-family:'Fredoka One',cursive;
+  font-size:72px;
+  user-select:none;
+  pointer-events:none;
+  will-change:transform;
+  line-height:1;
+  filter:drop-shadow(0 4px 8px rgba(255,100,180,.25));
+}
+#ui{position:absolute;bottom:24px;left:0;right:0;text-align:center;z-index:10;pointer-events:none}
+#ui p{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(180,80,130,.6)}
+#mood-label{position:absolute;top:20px;left:0;right:0;text-align:center;z-index:10;pointer-events:none;font-size:13px;letter-spacing:1.5px;color:rgba(200,80,140,.7);text-transform:uppercase;font-weight:700}
+.btn-row{position:absolute;bottom:50px;left:0;right:0;display:flex;gap:12px;justify-content:center;z-index:10}
+.xbtn{background:rgba(255,255,255,.75);backdrop-filter:blur(12px);border:1.5px solid rgba(255,130,200,.35);border-radius:50px;padding:8px 20px;font-size:12px;font-weight:700;color:#c0306a;cursor:pointer;letter-spacing:.5px;transition:all .2s;font-family:'Nunito',sans-serif;pointer-events:all}
+.xbtn:hover{background:rgba(255,200,230,.9);transform:scale(1.07)}
+.xbtn.active{background:linear-gradient(135deg,#ff6eb4,#e0348a);color:#fff;border-color:transparent}
+</style>
+
+<div id="stage">
+  <canvas id="bg"></canvas>
+  <div id="mood-label" id="moodLabel">✦ gerakkan kursor untuk bermain ✦</div>
+  <div id="letterContainer"></div>
+  <div class="btn-row">
+    <button class="xbtn active" onclick="setMode('chase')">🏃 Kejar-kejaran</button>
+    <button class="xbtn" onclick="setMode('scatter')">💨 Lari Panik</button>
+    <button class="xbtn" onclick="setMode('orbit')">🌀 Berputar</button>
+    <button class="xbtn" onclick="setMode('bounce')">🎾 Mantul</button>
+  </div>
+  <div id="ui"><p>✦ j · i · j · o · y ✦</p></div>
+</div>
+
+<script>
+const WORD = 'JIJOY';
+const COLORS = ['#ff4d9e','#ff85bb','#c084fc','#f472b6','#fb7185'];
+const GLOWS  = ['rgba(255,77,158,.45)','rgba(192,132,252,.45)','rgba(251,114,153,.45)','rgba(244,114,182,.45)','rgba(255,133,187,.45)'];
+
+const stage = document.getElementById('stage');
+const container = document.getElementById('letterContainer');
+const W = () => stage.clientWidth;
+const H = () => stage.clientHeight;
+
+let mode = 'chase';
+let mouse = {x: W()/2, y: H()/2};
+let letters = [];
+let raf;
+let tick = 0;
+
+class Letter {
+  constructor(char, idx, total) {
+    this.char = char;
+    this.idx = idx;
+    this.total = total;
+    this.x = W()/2 + (idx - total/2) * 80;
+    this.y = H()/2;
+    this.vx = (Math.random()-.5)*4;
+    this.vy = (Math.random()-.5)*4;
+    this.targetX = this.x;
+    this.targetY = this.y;
+    this.scale = 1;
+    this.rotation = 0;
+    this.rotVel = (Math.random()-.5)*.8;
+    this.color = COLORS[idx % COLORS.length];
+    this.glow = GLOWS[idx % GLOWS.length];
+    this.size = 68 + Math.sin(idx * 1.3) * 8;
+    this.phase = idx * (Math.PI * 2 / total);
+    this.orbitR = 80 + idx * 18;
+    this.orbitSpeed = .018 + idx * .004;
+    this.el = document.createElement('div');
+    this.el.className = 'letter';
+    this.el.textContent = char;
+    this.el.style.color = this.color;
+    this.el.style.fontSize = this.size + 'px';
+    this.el.style.textShadow = `0 0 30px ${this.glow}, 0 2px 4px rgba(0,0,0,.1)`;
+    container.appendChild(this.el);
+  }
+
+  update(dt) {
+    tick += .0005;
+    const t = performance.now() * .001;
+
+    if (mode === 'chase') {
+      // Each letter chases the next one; first chases mouse
+      let tx, ty;
+      if (this.idx === 0) {
+        tx = mouse.x; ty = mouse.y;
+      } else {
+        const prev = letters[this.idx - 1];
+        tx = prev.x; ty = prev.y;
+      }
+      const dx = tx - this.x, dy = ty - this.y;
+      const lag = 0.10 + this.idx * 0.045;
+      this.vx += dx * lag;
+      this.vy += dy * lag;
+      this.vx *= 0.72;
+      this.vy *= 0.72;
+      this.x += this.vx;
+      this.y += this.vy;
+      const speed = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
+      this.rotation += this.rotVel * (speed * .04);
+      this.scale = 1 + speed * .006;
+
+    } else if (mode === 'scatter') {
+      // Run AWAY from mouse, bounce off walls
+      const dx = this.x - mouse.x, dy = this.y - mouse.y;
+      const dist = Math.sqrt(dx*dx+dy*dy) || 1;
+      const force = Math.max(0, 1 - dist/250) * 18;
+      this.vx += (dx/dist) * force;
+      this.vy += (dy/dist) * force;
+      // Attract back to center gently
+      this.vx += (W()/2 - this.x) * .003;
+      this.vy += (H()/2 - this.y) * .003;
+      this.vx *= 0.88; this.vy *= 0.88;
+      this.x += this.vx; this.y += this.vy;
+      // Bounce walls
+      if (this.x < 50) { this.x = 50; this.vx = Math.abs(this.vx) * .8; }
+      if (this.x > W()-50) { this.x = W()-50; this.vx = -Math.abs(this.vx) * .8; }
+      if (this.y < 50) { this.y = 50; this.vy = Math.abs(this.vy) * .8; }
+      if (this.y > H()-80) { this.y = H()-80; this.vy = -Math.abs(this.vy) * .8; }
+      this.rotation += this.vx * .15;
+      const speed = Math.sqrt(this.vx*this.vx+this.vy*this.vy);
+      this.scale = 0.85 + speed * .025;
+
+    } else if (mode === 'orbit') {
+      // Orbit around mouse like planets + wobble
+      const angle = t * this.orbitSpeed * (this.idx % 2 === 0 ? 1 : -1.2) + this.phase;
+      const r = this.orbitR + Math.sin(t * 1.5 + this.phase) * 20;
+      const tx = mouse.x + Math.cos(angle) * r;
+      const ty = mouse.y + Math.sin(angle) * r;
+      this.vx += (tx - this.x) * .15;
+      this.vy += (ty - this.y) * .15;
+      this.vx *= .6; this.vy *= .6;
+      this.x += this.vx; this.y += this.vy;
+      this.rotation = angle * (180/Math.PI) + 90;
+      this.scale = 1 + Math.sin(t * 3 + this.phase) * .15;
+
+    } else if (mode === 'bounce') {
+      // Physics bounce with gravity + mouse repel
+      this.vy += .6;
+      const dx = this.x - mouse.x, dy = this.y - mouse.y;
+      const dist = Math.sqrt(dx*dx+dy*dy)||1;
+      if (dist < 120) {
+        this.vx += (dx/dist)*5;
+        this.vy += (dy/dist)*5;
+      }
+      this.vx *= .97; this.vy *= .97;
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < 48) { this.x=48; this.vx=Math.abs(this.vx)*.75; }
+      if (this.x > W()-48) { this.x=W()-48; this.vx=-Math.abs(this.vx)*.75; }
+      if (this.y > H()-90) { this.y=H()-90; this.vy=-Math.abs(this.vy)*.8; this.vx*=.95; }
+      if (this.y < 48) { this.y=48; this.vy=Math.abs(this.vy)*.6; }
+      this.rotation += this.vx * .4;
+      const speed = Math.sqrt(this.vx*this.vx+this.vy*this.vy);
+      this.scale = 1 + Math.abs(this.vy)*.008;
+    }
+  }
+
+  draw() {
+    this.el.style.transform = `translate(${this.x - this.size*.35}px, ${this.y - this.size*.55}px) rotate(${this.rotation}deg) scale(${this.scale})`;
+  }
+}
+
+function init() {
+  container.innerHTML = '';
+  letters = [];
+  for (let i = 0; i < WORD.length; i++) {
+    letters.push(new Letter(WORD[i], i, WORD.length));
+  }
+}
+
+function loop() {
+  letters.forEach(l => { l.update(); l.draw(); });
+  drawTrails();
+  raf = requestAnimationFrame(loop);
+}
+
+// Particle trail canvas
+const bgCanvas = document.getElementById('bg');
+const bctx = bgCanvas.getContext('2d');
+function resizeBg() { bgCanvas.width = W(); bgCanvas.height = H(); }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+
+let trails = [];
+stage.addEventListener('mousemove', e => {
+  const r = stage.getBoundingClientRect();
+  mouse.x = e.clientX - r.left;
+  mouse.y = e.clientY - r.top;
+  if (Math.random() > .4) {
+    trails.push({x: mouse.x, y: mouse.y, r: 3+Math.random()*5, life:1, color: COLORS[Math.floor(Math.random()*COLORS.length)]});
+  }
+});
+
+stage.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const r = stage.getBoundingClientRect();
+  mouse.x = e.touches[0].clientX - r.left;
+  mouse.y = e.touches[0].clientY - r.top;
+}, {passive:false});
+
+function drawTrails() {
+  bctx.clearRect(0,0,W(),H());
+  // soft bg
+  bctx.fillStyle = 'rgba(255,240,248,.07)';
+  bctx.fillRect(0,0,W(),H());
+
+  // draw trails
+  trails = trails.filter(t => t.life > 0);
+  trails.forEach(t => {
+    bctx.beginPath();
+    bctx.arc(t.x, t.y, t.r * t.life, 0, Math.PI*2);
+    bctx.fillStyle = t.color + Math.round(t.life*160).toString(16).padStart(2,'0');
+    bctx.fill();
+    t.r += .3;
+    t.life -= .06;
+  });
+
+  // draw chase lines between letters
+  if (mode === 'chase') {
+    for (let i = 1; i < letters.length; i++) {
+      const a = letters[i-1], b = letters[i];
+      const dx = b.x-a.x, dy = b.y-a.y;
+      const dist = Math.sqrt(dx*dx+dy*dy);
+      if (dist < 200) {
+        bctx.beginPath();
+        bctx.moveTo(a.x, a.y);
+        bctx.lineTo(b.x, b.y);
+        bctx.strokeStyle = `rgba(255,130,200,${(1-dist/200)*.3})`;
+        bctx.lineWidth = 1.5;
+        bctx.stroke();
+      }
+    }
+  }
+}
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.xbtn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  // reset velocities
+  letters.forEach(l => { l.vx=(Math.random()-.5)*8; l.vy=(Math.random()-.5)*8; });
+  const labels = {
+    chase:'🏃 J mengejar mouse · I mengejar J · dan seterusnya!',
+    scatter:'💨 semua kabur dari kursor — coba kejar mereka!',
+    orbit:'🌀 berputar mengelilingi kursor seperti planet',
+    bounce:'🎾 terpental gravitasi · dorong dengan kursor!'
+  };
+  document.getElementById('mood-label').textContent = labels[m];
+}
+
+init();
+loop();
+document.getElementById('mood-label').textContent = '🏃 J mengejar mouse · I mengejar J · dan seterusnya!';
+
+// gentle idle mouse drift when no movement
+let idleT = 0;
+setInterval(() => {
+  if (mode !== 'chase') return;
+  idleT += .04;
+  if (Math.random() > .97) {
+    mouse.x = W()/2 + Math.cos(idleT)*W()*.3;
+    mouse.y = H()/2 + Math.sin(idleT*1.3)*H()*.2;
+  }
+}, 60);
+</script>
