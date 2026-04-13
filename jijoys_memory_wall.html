@@ -1,0 +1,165 @@
+
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  .wall{background:#8B1A5C;min-height:700px;padding:24px;position:relative;overflow:hidden;font-family:system-ui,sans-serif}
+  .wall::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 30%,#A0226E 0%,transparent 60%),radial-gradient(ellipse at 80% 70%,#6B1045 0%,transparent 50%);pointer-events:none}
+  .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;position:relative;z-index:10}
+  .site-title{font-size:22px;font-weight:700;color:#FFD6EE;letter-spacing:-0.5px;text-shadow:0 1px 8px rgba(0,0,0,0.3)}
+  .site-title span{color:#FF9FD6;font-style:italic}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .filter-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#FFD6EE;padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;transition:all 0.2s;font-weight:500}
+  .filter-btn:hover,.filter-btn.active{background:rgba(255,255,255,0.3);border-color:rgba(255,255,255,0.6);color:#fff;transform:scale(1.05)}
+  .counter{font-size:12px;color:rgba(255,214,238,0.6);align-self:center;white-space:nowrap}
+  .photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;position:relative;z-index:2}
+  .photo-item{position:relative;cursor:pointer;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),z-index 0s;border-radius:10px;overflow:visible}
+  .photo-item:nth-child(5n+1){transform:rotate(-4deg)}
+  .photo-item:nth-child(5n+2){transform:rotate(3deg);margin-top:16px}
+  .photo-item:nth-child(5n+3){transform:rotate(-2deg)}
+  .photo-item:nth-child(5n+4){transform:rotate(5deg);margin-top:8px}
+  .photo-item:nth-child(5n+5){transform:rotate(-3deg);margin-top:4px}
+  .photo-item:hover{transform:rotate(0deg) scale(1.15)!important;z-index:50;margin-top:0!important}
+  .photo-item.hidden{opacity:0;pointer-events:none;transform:scale(0.8) rotate(0deg)!important;transition:all 0.3s}
+  .photo-inner{background:#fff;padding:6px 6px 28px;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,0.4),0 1px 3px rgba(0,0,0,0.2);position:relative}
+  .photo-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px;display:block}
+  .photo-placeholder{width:100%;aspect-ratio:1;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:28px;background:#f0e8f0}
+  .photo-label{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:9px;color:#888;font-family:cursive;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px}
+  .tape{position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:32px;height:14px;background:rgba(255,230,100,0.7);border-radius:2px;z-index:2}
+  .heart-pin{position:absolute;top:-10px;right:8px;font-size:14px;z-index:3;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.3))}
+  .tooltip{position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%);background:#1a0a12;color:#FFD6EE;padding:8px 12px;border-radius:8px;font-size:11px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.2s;z-index:100;border:1px solid rgba(255,150,214,0.3)}
+  .tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1a0a12}
+  .photo-item:hover .tooltip{opacity:1}
+  .sparkle{position:absolute;pointer-events:none;font-size:12px;animation:sparkle-anim 1s ease-out forwards;z-index:200}
+  @keyframes sparkle-anim{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-40px) scale(0.5)}}
+  .stats-bar{display:flex;gap:16px;margin-bottom:16px;position:relative;z-index:10}
+  .stat{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 16px;color:#FFD6EE;font-size:12px;text-align:center}
+  .stat b{display:block;font-size:18px;color:#fff;font-weight:700}
+  .liked-badge{position:absolute;top:4px;right:4px;background:#ff4b8a;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;opacity:0;transition:opacity 0.2s;z-index:5}
+  .photo-item.liked .liked-badge{opacity:1}
+  .shuffle-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#FFD6EE;padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;transition:all 0.2s;font-weight:500}
+  .shuffle-btn:hover{background:rgba(255,255,255,0.25);transform:rotate(-5deg) scale(1.05)}
+</style>
+
+<div class="wall">
+  <div class="top-bar">
+    <div class="site-title">Jijoy's <span>with Love</span> ✨</div>
+    <div class="filters" id="filters">
+      <button class="filter-btn active" data-cat="all" onclick="filter('all')">Semua</button>
+      <button class="filter-btn" data-cat="couple" onclick="filter('couple')">Couple</button>
+      <button class="filter-btn" data-cat="girls" onclick="filter('girls')">Girls</button>
+      <button class="filter-btn" data-cat="hangout" onclick="filter('hangout')">Hangout</button>
+      <button class="filter-btn" data-cat="selfie" onclick="filter('selfie')">Selfie</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="counter" id="counter">18 kenangan</span>
+      <button class="shuffle-btn" onclick="shufflePhotos()">🔀 Acak</button>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><b id="total-count">18</b>foto</div>
+    <div class="stat"><b id="liked-count">0</b>favorit</div>
+    <div class="stat"><b>2024</b>tahun</div>
+    <div class="stat"><b>Medan</b>kota</div>
+  </div>
+
+  <div class="photo-grid" id="grid"></div>
+</div>
+
+<script>
+const photos=[
+  {id:1,emoji:'👫',label:'Dinner berdua',cat:'couple',color:'#f0e4ff',desc:'Momen makan malam spesial'},
+  {id:2,emoji:'🚶',label:'Jalan bareng',cat:'hangout',color:'#e4f0ff',desc:'Jalan-jalan sore hari'},
+  {id:3,emoji:'🥤',label:'Nongkrong cafe',cat:'hangout',color:'#fff0e4',desc:'Ngopi santai'},
+  {id:4,emoji:'😊',label:'Selfie manis',cat:'selfie',color:'#ffe4f0',desc:'Senyum tulus'},
+  {id:5,emoji:'💑',label:'Foto booth',cat:'couple',color:'#e4fff0',desc:'Photo booth seru'},
+  {id:6,emoji:'👩',label:'Galau cantik',cat:'selfie',color:'#f0ffe4',desc:'Momen santai'},
+  {id:7,emoji:'📸',label:'Foto bareng',cat:'hangout',color:'#fce4ff',desc:'Diabadikan bersama'},
+  {id:8,emoji:'💕',label:'Pelukan hangat',cat:'couple',color:'#ffe4e4',desc:'Penuh kasih sayang'},
+  {id:9,emoji:'🤳',label:'Selfie seru',cat:'selfie',color:'#e4fff8',desc:'Ekspresif banget'},
+  {id:10,emoji:'☕',label:'Cafe hopping',cat:'hangout',color:'#fff8e4',desc:'Nyobain cafe baru'},
+  {id:11,emoji:'🌸',label:'Cantik natural',cat:'girls',color:'#ffe4f5',desc:'Vibes aesthetic'},
+  {id:12,emoji:'💻',label:'Study date',cat:'couple',color:'#e4eeff',desc:'Bareng sambil kerja'},
+  {id:13,emoji:'😄',label:'Ketawa bareng',cat:'hangout',color:'#efffea',desc:'Penuh tawa'},
+  {id:14,emoji:'🤗',label:'Girls hangout',cat:'girls',color:'#ffeef5',desc:'Cewek-cewek solid'},
+  {id:15,emoji:'🥰',label:'Look at you',cat:'selfie',color:'#f5e4ff',desc:'Raut bahagia'},
+  {id:16,emoji:'🏙️',label:'Malam kota',cat:'hangout',color:'#e4f5ff',desc:'City night vibes'},
+  {id:17,emoji:'👭',label:'Best friends',cat:'girls',color:'#ffe4ec',desc:'Sahabat sejati'},
+  {id:18,emoji:'✨',label:'Moment perfect',cat:'couple',color:'#fdf0ff',desc:'Kenangan indah'},
+];
+
+let liked=new Set();
+let currentCat='all';
+
+function buildGrid(photosArr){
+  const grid=document.getElementById('grid');
+  grid.innerHTML='';
+  photosArr.forEach((p,i)=>{
+    const div=document.createElement('div');
+    div.className='photo-item'+(liked.has(p.id)?' liked':'');
+    div.dataset.cat=p.cat;
+    div.dataset.id=p.id;
+    div.onclick=e=>onPhotoClick(e,div,p);
+    const hasTape=i%3===0;
+    const hasPin=i%4===1;
+    const rotations=[-4,3,-2,5,-3,-5,2,-1,4,-2];
+    const rot=rotations[i%rotations.length];
+    const mt=[0,16,0,8,4,12,0,6,0,10][i%10];
+    div.style.cssText=`transform:rotate(${rot}deg);margin-top:${mt}px`;
+    div.innerHTML=`
+      ${hasTape?'<div class="tape"></div>':''}
+      ${hasPin?'<div class="heart-pin">📌</div>':''}
+      <div class="liked-badge">♥</div>
+      <div class="photo-inner">
+        <div class="photo-placeholder" style="background:${p.color}">${p.emoji}</div>
+        <div class="photo-label">${p.label}</div>
+      </div>
+      <div class="tooltip">${p.desc} · klik untuk suka</div>
+    `;
+    grid.appendChild(div);
+  });
+  updateCounter();
+}
+
+function onPhotoClick(e,div,p){
+  e.stopPropagation();
+  if(liked.has(p.id)){liked.delete(p.id);div.classList.remove('liked')}
+  else{liked.add(p.id);div.classList.add('liked');spawnSparkle(e)}
+  document.getElementById('liked-count').textContent=liked.size;
+}
+
+function spawnSparkle(e){
+  const el=document.createElement('div');
+  el.className='sparkle';
+  el.textContent='💖';
+  el.style.left=(e.clientX-document.querySelector('.wall').getBoundingClientRect().left)+'px';
+  el.style.top=(e.clientY-document.querySelector('.wall').getBoundingClientRect().top)+'px';
+  document.querySelector('.wall').appendChild(el);
+  setTimeout(()=>el.remove(),1000);
+}
+
+function filter(cat){
+  currentCat=cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.cat===cat);
+  });
+  document.querySelectorAll('.photo-item').forEach(item=>{
+    const show=cat==='all'||item.dataset.cat===cat;
+    item.classList.toggle('hidden',!show);
+  });
+  updateCounter();
+}
+
+function updateCounter(){
+  const visible=currentCat==='all'?photos.length:photos.filter(p=>p.cat===currentCat).length;
+  document.getElementById('counter').textContent=visible+' kenangan';
+  document.getElementById('total-count').textContent=photos.length;
+}
+
+function shufflePhotos(){
+  const shuffled=[...photos].sort(()=>Math.random()-0.5);
+  buildGrid(shuffled);
+  if(currentCat!=='all')filter(currentCat);
+}
+
+buildGrid(photos);
+</script>
