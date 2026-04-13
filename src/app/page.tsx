@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import ModeMalam from '@/components/ModeMalam';
 import PasswordScreen from '@/components/PasswordScreen';
 import PhotoMosaic from '@/components/PhotoMosaic';
+import ParticleBackground from '@/components/ParticleBackground';
 
 const FACTS = [
   { emoji: '🎂', text: 'Ultah Jijoy: 14 Des 2004', sub: '(21 tahun ♐️)' },
@@ -142,9 +143,10 @@ export default function Home() {
             key="home"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="min-h-screen bg-gradient-to-br from-rose-900 via-pink-900 to-purple-900 relative z-10"
+            className="min-h-screen bg-transparent relative z-10"
           >
-            <div className="container mx-auto px-4 py-8 space-y-8">
+            <ParticleBackground type="fountain" color="#ff69b4" num={80} />
+            <div className="container mx-auto px-4 py-8 space-y-8 relative z-10">
               <motion.div
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}

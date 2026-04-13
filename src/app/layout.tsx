@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, DM_Sans } from "next/font/google";
+import { Playfair_Display, Poppins } from "next/font/google";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -7,8 +7,9 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
 });
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const poppins = Poppins({
+  variable: "--font-poppins",
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${playfair.variable} ${dmSans.variable} h-full antialiased`}
+      className={`${playfair.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
