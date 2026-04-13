@@ -1,120 +1,101 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-
-interface Particle {
-  x: number;
-  y: number;
-  radius: number;
-  dx: number;
-  dy: number;
-  opacity: number;
-}
-
 interface ParticleBackgroundProps {
   particleCount?: number;
-  color?: string;
 }
 
 export default function ParticleBackground({ 
-  particleCount = 60,
-  color = '#ff69b4'
+  particleCount = 30
 }: ParticleBackgroundProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-  useEffect(() => {
-    const updateDimensions = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-    };
-
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
-  }, []);
-
-  useEffect(() => {
-    if (!canvasRef.current || dimensions.width === 0) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    canvas.width = dimensions.width;
-    canvas.height = dimensions.height;
-
-    // Create particles
-    const particles: Particle[] = [];
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 2 + 1,
-        dx: (Math.random() - 0.5) * 0.5,
-        dy: (Math.random() - 0.5) * 0.5,
-        opacity: Math.random() * 0.5 + 0.3
-      });
-    }
-
-    // Animation loop
-    let animationId: number;
-    
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Draw particles
-      particles.forEach((p) => {
-        p.x += p.dx;
-        p.y += p.dy;
-
-        // Bounce off edges
-        if (p.x < 0 || p.x > canvas.width) p.dx = -p.dx;
-        if (p.y < 0 || p.y > canvas.height) p.dy = -p.dy;
-
-        // Draw particle
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = color;
-        ctx.globalAlpha = p.opacity;
-        ctx.fill();
-      });
-
-      // Draw connecting lines between nearby particles
-      particles.forEach((p1, i) => {
-        particles.slice(i + 1).forEach((p2) => {
-          const dist = Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
-          if (dist < 150) {
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = color;
-            ctx.globalAlpha = (1 - dist / 150) * 0.3;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        });
-      });
-
-      animationId = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      cancelAnimationFrame(animationId);
-    };
-  }, [dimensions, particleCount, color]);
+  // Generate random particle positions
+  const particles = Array.from({ length: particleCount }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    top: Math.random() * 100,
+    animationDuration: Math.random() * 10 + 15,
+    animationDelay: Math.random() * 5,
+    size: Math.random() * 4 + 2,
+    opacity: Math.random() * 0.5 + 0.2,
+  }));
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
+    <div 
+      className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
       style={{
         background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
       }}
-    />
+    >
+      {particles.map((p) => (
+        <div
+          key={p.id}
+          className="absolute rounded-full animate-float"
+          style={{
+            left: `${p.left}%`,
+            top: `${p.top}%`,
+            width: p.size,
+            height: p.size,
+            backgroundColor: '#ff69b4',
+            opacity: p.opacity,
+            animationDuration: `${p.animationDuration}s`,
+            animationDelay: `${p.animationDelay}s`,
+            boxShadow: `0 0 ${p.size * 2}px #ff69b4`,
+          }}
+        />
+      ))}
+      {/* Floating hearts */}
+      {Array.from({ length: 10 }, (_, i) => (
+        <div
+          key={`heart-${i}`}
+          className="absolute animate-float-heart"
+          style={{
+            left: `${Math.random() * 100}%`,
+            fontSize: `${Math.random() * 20 + 10}px`,
+            animationDuration: `${Math.random() * 8 + 12}s`,
+            animationDelay: `${Math.random() * 5}s`,
+            opacity: Math.random() * 0.6 + 0.3,
+          }}
+        >
+          {['💕', '💗', '💖', '🧡', '❤️'][i % 5]}
+        </div>
+      ))}
+      <style>{`
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0) translateX(0);
+          }
+          25% {
+            transform: translateY(-30px) translateX(10px);
+          }
+          50% {
+            transform: translateY(-10px) translateX(-10px);
+          }
+          75% {
+            transform: translateY(-40px) translateX(5px);
+          }
+        }
+        @keyframes floatHeart {
+          0% {
+            transform: translateY(100vh) scale(0);
+            opacity: 0;
+          }
+          10% {
+            opacity: 0.8;
+          }
+          90% {
+            opacity: 0.8;
+          }
+          100% {
+            transform: translateY(-100px) scale(1);
+            opacity: 0;
+          }
+        }
+        .animate-float {
+          animation: float ease-in-out infinite;
+        }
+        .animate-float-heart {
+          animation: floatHeart linear infinite;
+        }
+      `}</style>
+    </div>
   );
 }

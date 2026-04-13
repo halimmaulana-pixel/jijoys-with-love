@@ -145,7 +145,7 @@ export default function Home() {
             animate={{ opacity: 1 }}
             className="min-h-screen bg-transparent relative z-10"
           >
-            <ParticleBackground particleCount={60} color="#ff69b4" />
+            <ParticleBackground particleCount={40} />
             <div className="container mx-auto px-4 py-8 space-y-8 relative z-10">
               <motion.div
                 initial={{ y: -20, opacity: 0 }}
