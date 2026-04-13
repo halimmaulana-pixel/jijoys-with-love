@@ -249,7 +249,7 @@ export default function WishLetter() {
                       className="relative rounded-2xl border border-rose-200/50 bg-gradient-to-br from-rose-50/50 to-pink-50/50 p-6 sm:p-8"
                     >
                       <div className="absolute -top-3 left-4 text-4xl text-rose-300">
-                        "
+                        &quot;
                       </div>
                       <p
                         className="font-serif text-xl leading-relaxed text-rose-800 sm:text-2xl"
@@ -258,7 +258,7 @@ export default function WishLetter() {
                         {message}
                       </p>
                       <div className="absolute -bottom-3 right-4 text-4xl text-rose-300">
-                        "
+                        &quot;
                       </div>
                     </motion.div>
 

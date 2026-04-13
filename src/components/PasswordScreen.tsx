@@ -130,7 +130,7 @@ export default function PasswordScreen({ onSuccess }: PasswordScreenProps) {
               </h1>
               
               <p className="text-center text-rose-600 mb-8 text-lg">
-                "Kita pertama kali ketemu di mana ya?"
+                &quot;Kita pertama kali ketemu di mana ya?&quot;
               </p>
 
               <AnimatePresence mode="wait">
