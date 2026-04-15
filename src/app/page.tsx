@@ -7,6 +7,7 @@ import ModeMalam from '@/components/ModeMalam';
 import PasswordScreen from '@/components/PasswordScreen';
 import PhotoMosaic from '@/components/PhotoMosaic';
 import PhotoReel from '@/components/PhotoReel';
+import PhotoAlbum from '@/components/PhotoAlbum';
 import ParticleBackground from '@/components/ParticleBackground';
 import MoodSelector from '@/components/MoodSelector';
 import ChasingLetters from '@/components/ChasingLetters';
@@ -232,6 +233,21 @@ export default function Home() {
                 ))}
               </motion.div>
 
+              {/* ── PHOTO ALBUM (FULLSCREEN) ── */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                <h2 className="text-white text-xl font-semibold mb-2 text-center">
+                  🖼️ Photo Album 💕
+                </h2>
+                <p className="text-white/50 text-center text-sm mb-4">
+                  ← → arrow · F = fullscreen · klik thumbnails
+                </p>
+                <PhotoAlbum />
+              </motion.div>
+
               {/* ── PHOTO REEL ── */}
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
@@ -239,7 +255,7 @@ export default function Home() {
                 transition={{ delay: 0.5 }}
               >
                 <h2 className="text-white text-xl font-semibold mb-2 text-center">
-                  🎬 Kenangan Kita 💕
+                  🎬 KenanganKita 💕
                 </h2>
                 <p className="text-white/50 text-center text-sm mb-4">
                   ▶ Play otomatis · ⌨ Arrow keys · F = fullscreen
