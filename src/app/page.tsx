@@ -8,6 +8,7 @@ import PasswordScreen from '@/components/PasswordScreen';
 import PhotoMosaic from '@/components/PhotoMosaic';
 import PhotoReel from '@/components/PhotoReel';
 import PhotoAlbum from '@/components/PhotoAlbum';
+import TripMap from '@/components/TripMap';
 import ParticleBackground from '@/components/ParticleBackground';
 import MoodSelector from '@/components/MoodSelector';
 import ChasingLetters from '@/components/ChasingLetters';
@@ -25,6 +26,70 @@ const FACTS = [
 ];
 
 const START_DATE = new Date('2025-06-26');
+const ANNIVERSARY_DATE = new Date('2025-06-26');
+
+function getNextAnniversary() {
+  const now = new Date();
+  const thisYear = new Date(now.getFullYear(), ANNIVERSARY_DATE.getMonth(), ANNIVERSARY_DATE.getDate());
+  if (now > thisYear) {
+    return new Date(now.getFullYear() + 1, ANNIVERSARY_DATE.getMonth(), ANNIVERSARY_DATE.getDate());
+  }
+  return thisYear;
+}
+
+function AnniversaryCountdown() {
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [years, setYears] = useState(0);
+
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date();
+      const nextAnniversary = getNextAnniversary();
+      const diff = nextAnniversary.getTime() - now.getTime();
+      const yearsCount = nextAnniversary.getFullYear() - ANNIVERSARY_DATE.getFullYear();
+      
+      setYears(yearsCount);
+      setCountdown({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((diff % (1000 * 60)) / 1000),
+      });
+    };
+    
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <p className="text-pink-300 text-sm">🌹 Anniversary ke-{years} 🎉</p>
+      <div className="flex gap-2 text-white">
+        <div className="flex flex-col items-center">
+          <span className="text-2xl font-bold">{countdown.days}</span>
+          <span className="text-xs text-white/50">hari</span>
+        </div>
+        <span className="text-2xl">:</span>
+        <div className="flex flex-col items-center">
+          <span className="text-2xl font-bold">{countdown.hours}</span>
+          <span className="text-xs text-white/50">jam</span>
+        </div>
+        <span className="text-2xl">:</span>
+        <div className="flex flex-col items-center">
+          <span className="text-2xl font-bold">{countdown.minutes}</span>
+          <span className="text-xs text-white/50">menit</span>
+        </div>
+        <span className="text-2xl">:</span>
+        <div className="flex flex-col items-center">
+          <span className="text-2xl font-bold">{countdown.seconds}</span>
+          <span className="text-xs text-white/50">detik</span>
+        </div>
+      </div>
+      <p className="text-white/50 text-sm">⏰ 26 Juni 2026</p>
+    </div>
+  );
+}
 
 function RelationshipCounter() {
   const [days, setDays] = useState(0);
@@ -179,9 +244,18 @@ export default function Home() {
               </motion.div>
 
               <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.25 }}
+                className="bg-pink-500/20 backdrop-blur-xl rounded-3xl p-6 border border-pink-400/30"
+              >
+                <AnniversaryCountdown />
+              </motion.div>
+
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
+                transition={{ delay: 0.3 }}
               >
                 <MoodSelector />
               </motion.div>
@@ -189,7 +263,21 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.35 }}
+              >
+                <h2 className="text-white text-xl font-semibold mb-2 text-center">
+                  🗺️ Trip Kita 💕
+                </h2>
+                <p className="text-white/50 text-center text-sm mb-4">
+                  Lokasi dari GPS foto 📍
+                </p>
+                <TripMap />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
               >
                 <ChasingLetters />
               </motion.div>
