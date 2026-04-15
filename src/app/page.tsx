@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import ModeMalam from '@/components/ModeMalam';
 import PasswordScreen from '@/components/PasswordScreen';
 import PhotoMosaic from '@/components/PhotoMosaic';
+import PhotoReel from '@/components/PhotoReel';
 import ParticleBackground from '@/components/ParticleBackground';
 import MoodSelector from '@/components/MoodSelector';
 import ChasingLetters from '@/components/ChasingLetters';
@@ -231,13 +232,29 @@ export default function Home() {
                 ))}
               </motion.div>
 
+              {/* ── PHOTO REEL ── */}
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                <h2 className="text-white text-xl font-semibold mb-4 text-center">
-                  📸 Kenangan Kita 💕
+                <h2 className="text-white text-xl font-semibold mb-2 text-center">
+                  🎬 Kenangan Kita 💕
+                </h2>
+                <p className="text-white/50 text-center text-sm mb-4">
+                  ▶ Play otomatis · ⌨ Arrow keys · F = fullscreen
+                </p>
+                <PhotoReel />
+              </motion.div>
+
+              {/* ── PHOTO MOSAIC (tetap ada di bawah) ── */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                <h2 className="text-white text-xl font-semibold mb-4 text-center mt-4">
+                  📸 Semua Foto 💕
                 </h2>
                 <p className="text-white/50 text-center text-sm mb-4">
                   Klik foto untuk quote 💕

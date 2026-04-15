@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 interface PhotoItem {
   id: string;
@@ -160,10 +161,11 @@ export default function PhotoGrid() {
             className="aspect-square overflow-hidden rounded-2xl cursor-pointer relative group"
             onClick={() => handlePhotoClick(photo)}
           >
-            <img
+            <Image
               src={photo.src}
               alt={photo.person}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="absolute bottom-2 left-2 right-2 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
